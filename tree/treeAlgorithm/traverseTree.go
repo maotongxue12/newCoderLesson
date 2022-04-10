@@ -3,6 +3,8 @@ package treeAlgorithm
 import (
 	"fmt"
 	"newCode/tree/treeUtil"
+	"strconv"
+	"strings"
 )
 
 func newNode(Value int, lf, rt *treeUtil.Node) *treeUtil.Node {
@@ -10,6 +12,15 @@ func newNode(Value int, lf, rt *treeUtil.Node) *treeUtil.Node {
 		Value: Value,
 		Left:  lf,
 		Right: rt,
+	}
+}
+
+func newNodeParent(Value int, lf, rt, par *treeUtil.Node) *treeUtil.Node {
+	return &treeUtil.Node{
+		Value:  Value,
+		Left:   lf,
+		Right:  rt,
+		Parent: par,
 	}
 }
 
@@ -150,3 +161,69 @@ func levelTraversal(head *treeUtil.Node) {
 	}
 }
 
+//前序遍历树的序列化
+func preOrderTraverSerialization(head *treeUtil.Node) string {
+	if head == nil {
+		return "# "
+	}
+	res := fmt.Sprintf("%d", head.Value) + " "
+	res += preOrderTraverSerialization(head.Left)
+	res += preOrderTraverSerialization(head.Right)
+	return res
+}
+
+//前序遍历非递归序列化
+func preOrderTraverSerializationUnRecursive(head *treeUtil.Node) string {
+	if head == nil {
+		return ""
+	}
+	stack := make([]*treeUtil.Node, 0)
+	stack = append(stack, head)
+	var res string
+	for len(stack) != 0 {
+		value := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		leaf, _ := strconv.Atoi("#")
+		if value.Value == leaf {
+			res = res + "#" + " "
+			continue
+		}
+		res = res + fmt.Sprintf("%d", value.Value) + " "
+
+		if value.Right != nil {
+			stack = append(stack, value.Right)
+		} else {
+			val, _ := strconv.Atoi("#")
+			stack = append(stack, &treeUtil.Node{Value: val})
+		}
+		if value.Left != nil {
+			stack = append(stack, value.Left)
+		} else {
+			val, _ := strconv.Atoi("#")
+			stack = append(stack, &treeUtil.Node{Value: val})
+		}
+	}
+	return res
+}
+
+//前序反序列化
+func inorderDeserialization(str string) (head *treeUtil.Node){
+	string := strings.Split(str, "_")
+	head = deserialization(string)
+	fmt.Println(string)
+	return head
+}
+
+var index int = -1
+func deserialization(str []string) (head *treeUtil.Node) {
+	index++
+	value := str[index]
+	if value == "#" {
+		return nil
+	}
+	val, _ := strconv.Atoi(value)
+	head = newNode(val, nil, nil)
+	head.Left = deserialization(str)
+	head.Right = deserialization(str)
+	return head
+}

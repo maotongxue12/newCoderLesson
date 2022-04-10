@@ -7,6 +7,7 @@ import (
 
 type Node struct {
 	Value int
+	Parent *Node
 	Left  *Node
 	Right  *Node
 }
