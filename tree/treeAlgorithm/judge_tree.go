@@ -1,6 +1,7 @@
 package treeAlgorithm
 
 import (
+	"fmt"
 	"math"
 	"newCode/tree/treeUtil"
 )
@@ -160,4 +161,80 @@ func getMostLeftLeafNode(node *treeUtil.Node) *treeUtil.Node {
 		node = node.Left
 	}
 	return node
+}
+
+//折纸问题，【题目】 请把一段纸条竖着放在桌子上，然后从纸条的下边向上方对折1次，压出折痕后展开。
+//此时 折痕是凹下去的，即折痕突起的方向指向纸条的背面。如果从纸条的下边向上方连续对折 2 次，压出
+//折痕后展开，此时有三条折痕，从上到下依次是下折痕、下折痕和上折痕。
+//给定一 个输入参数N，代表纸条都从下边向上方连续对折N次，请从上到下打印所有折痕的方向。
+//例如：N=1时，打印： down N=2时，打印： down down up
+//思路：观察发现，该结构可以理解为根节点为down且每个子树左节点为down，右节点为up的二叉树的中序遍历
+func paperFolding(N int) {
+	printProcess(1, N, true)
+}
+
+func printProcess(i, N int, isDown bool) {
+	if i > N {
+		return
+	}
+	//类似于打印左子树，down
+	printProcess(i+1, N, true)
+	if isDown {
+		fmt.Println("down")
+	} else {
+		fmt.Println("up")
+	}
+	//打印右子树，up
+	printProcess(i+1, N, false)
+}
+
+//已知一棵完全二叉树，求其节点的个数
+//方法一：遍历...
+func computerNodeLevelOrder(head *treeUtil.Node) (nums int){
+	if head == nil {
+		return 0
+	}
+	queue := make([]*treeUtil.Node, 0)
+	queue = append(queue, head)
+	for len(queue) != 0 {
+		val := queue[0]
+		queue = queue[1:]
+		nums++
+		if val.Left != nil {
+			queue = append(queue, val.Left)
+		}
+		if val.Right != nil {
+			queue = append(queue, val.Right)
+		}
+	}
+	return nums
+}
+
+//方法二：利用完全二叉树的性质采用递归方法获取节点个数，首先计算二叉树的深度allLevel，然后判断右子树的最左叶子节点的深度level，如果level=allLevel
+//则表明该完全二叉树的左子树为满二叉树，深度为allLevel，否则该二叉树的右子树为满二叉树，且该满二叉树的深度为allLevel-1
+func computerNodeNums(head *treeUtil.Node) int {
+	if head == nil {
+		return 0
+	}
+	return nodeNums(head, 1, mostLeftLeaf(head, 1))
+}
+
+//level表示当前节点所在层数，allLevel表示树的总深度
+func nodeNums(head *treeUtil.Node, level int, allLevel int) int {
+	if level == allLevel {
+		return 1
+	}
+	if mostLeftLeaf(head.Right, level+1) == allLevel {
+		return 1 << (allLevel-level) + nodeNums(head.Right, level+1, allLevel)
+	} else {
+		return nodeNums(head.Left, level+1, allLevel) + 1 << (allLevel-level-1)
+	}
+}
+
+func mostLeftLeaf(head *treeUtil.Node, level int) int {
+	for head != nil {
+		level++
+		head = head.Left
+	}
+	return level-1
 }

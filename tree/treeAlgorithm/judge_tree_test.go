@@ -2,11 +2,12 @@ package treeAlgorithm
 
 import (
 	"fmt"
+	. "github.com/smartystreets/goconvey/convey"
 	"newCode/tree/treeUtil"
 	"testing"
 )
 
-func TestJudgeBSTTree(T *testing.T) {
+func TestJudgeBSTTree(t *testing.T) {
 	node07 := newNode(9, nil, nil)
 	node06 := newNode(7, nil, nil)
 	node05 := newNode(1, nil, nil)
@@ -30,7 +31,7 @@ func TestJudgeBSTTree(T *testing.T) {
 	fmt.Println(judgeBSTTree(head1))
 }
 
-func TestJudgeIsBalanceTree(T *testing.T) {
+func TestJudgeIsBalanceTree(t *testing.T) {
 	node07 := newNode(9, nil, nil)
 	node06 := newNode(7, nil, nil)
 	node05 := newNode(1, nil, nil)
@@ -54,7 +55,7 @@ func TestJudgeIsBalanceTree(T *testing.T) {
 	fmt.Println(judgeIsBalanceTree(head1))
 }
 
-func TestJudgeIsCompleteBinaryTree(T *testing.T) {
+func TestJudgeIsCompleteBinaryTree(t *testing.T) {
 	node07 := newNode(9, nil, nil)
 	node06 := newNode(7, nil, nil)
 	//node05 := newNode(1, nil, nil)
@@ -78,7 +79,7 @@ func TestJudgeIsCompleteBinaryTree(T *testing.T) {
 	fmt.Println(judgeIsCompleteBinaryTree(head1))
 }
 
-func TestGetDescendantNode02(T *testing.T) {
+func TestGetDescendantNode02(t *testing.T) {
 	node07 := newNodeParent(9, nil, nil, nil)
 	node06 := newNodeParent(7, nil, nil, nil)
 	//node05 := newNode(1, nil, nil)
@@ -110,4 +111,40 @@ func TestGetDescendantNode02(T *testing.T) {
 	treeUtil.PrintAvlTree(head1)
 	fmt.Println(getDescendantNode02(head1))
 	fmt.Println(getDescendantNode02(head1))
+}
+
+func TestPrintProcess(t *testing.T) {
+	var N int = 3
+	paperFolding(N)
+}
+
+func TestComputerNodeNums(t *testing.T) {
+	node07 := newNode(9, nil, nil)
+	node06 := newNode(7, nil, nil)
+	node05 := newNode(1, nil, nil)
+	//node04 := newNode(4, nil, nil)
+	node03 := newNode(2, nil, nil)
+	node02 := newNode(8, node05, node06)
+	node01 := newNode(3, node03,node07)
+	head := newNode(5, node01, node02)
+	treeUtil.PrintAvlTree(head)
+	Convey("test computer node nums: ", t, func() {
+		fmt.Println(computerNodeLevelOrder(head))
+		So(computerNodeLevelOrder(head), ShouldEqual, computerNodeNums(head))
+	})
+
+	node007 := newNode(9, nil, nil)
+	node006 := newNode(7, nil, nil)
+	node005 := newNode(1, nil, nil)
+	node004 := newNode(5, nil, nil)
+	node008 := newNode(4, nil, nil)
+	node003 := newNode(2, node004, node008)
+	node002 := newNode(8, node005, node006)
+	node001 := newNode(3, node003,node007)
+	head0 := newNode(5, node001, node002)
+	treeUtil.PrintAvlTree(head0)
+	Convey("test computer node nums: ", t, func() {
+		fmt.Println(computerNodeLevelOrder(head0))
+		So(computerNodeLevelOrder(head0), ShouldEqual, computerNodeNums(head0))
+	})
 }

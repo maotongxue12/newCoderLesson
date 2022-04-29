@@ -161,7 +161,7 @@ func levelTraversal(head *treeUtil.Node) {
 	}
 }
 
-//前序遍历树的序列化
+//前序遍历序列化--递归
 func preOrderTraverSerialization(head *treeUtil.Node) string {
 	if head == nil {
 		return "# "
@@ -172,7 +172,7 @@ func preOrderTraverSerialization(head *treeUtil.Node) string {
 	return res
 }
 
-//前序遍历非递归序列化
+//前序遍历序列化--非递归
 func preOrderTraverSerializationUnRecursive(head *treeUtil.Node) string {
 	if head == nil {
 		return ""
@@ -207,7 +207,7 @@ func preOrderTraverSerializationUnRecursive(head *treeUtil.Node) string {
 }
 
 //前序反序列化
-func inorderDeserialization(str string) (head *treeUtil.Node){
+func preorderDeserialization(str string) (head *treeUtil.Node){
 	string := strings.Split(str, "_")
 	head = deserialization(string)
 	fmt.Println(string)
@@ -226,4 +226,209 @@ func deserialization(str []string) (head *treeUtil.Node) {
 	head.Left = deserialization(str)
 	head.Right = deserialization(str)
 	return head
+}
+
+//中序遍历序列化--递归
+func inOrderSerialization(head *treeUtil.Node) string {
+	if head == nil {
+		return "#"
+	}
+	var res string
+	res += inOrderSerialization(head.Left)
+	res = res + " " + fmt.Sprintf("%d", head.Value) + " "
+	res += inOrderSerialization(head.Right)
+	return res
+}
+
+//中序遍历序列化--非递归
+func inOrderSerializationUnRecursive(head *treeUtil.Node) string {
+	if head == nil {
+		return ""
+	}
+	var res string
+	stack := make([]*treeUtil.Node, 0)
+
+	for head != nil || len(stack) != 0 {
+		if head != nil {
+			stack = append(stack, head)
+			head = head.Left
+			if head == nil {
+				val, _ := strconv.Atoi("#")
+				stack = append(stack, &treeUtil.Node{Value: val})
+			}
+		} else {
+			head = stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			leaf, _ := strconv.Atoi("#")
+			if head.Value == leaf {
+				res = res + "#" + " "
+				head = nil
+				continue
+			} else {
+				res = res + fmt.Sprintf("%d", head.Value) + " "
+			}
+			head = head.Right
+			if head == nil {
+				val, _ := strconv.Atoi("#")
+				stack = append(stack, &treeUtil.Node{Value: val})
+			}
+		}
+	}
+	//返回res时需要删除res中最后一个多余的空格
+	return res[:len(res)-1]
+}
+
+//中序遍历反序列化,因无法确定二叉树的根节点，因此无法反序列化
+var i int = -1
+func inOrderDeserialization(str string) (head *treeUtil.Node){
+	tempStr := strings.Split(str, "_")
+	i++
+	value := tempStr[i]
+	if value == "#" {
+		return nil
+	}
+
+	//val,_ := strconv.Atoi(value)
+	return head
+}
+
+//后续遍历反序列化--递归
+var j int
+func postOrderDeserialization(str string) (head *treeUtil.Node) {
+	strs := strings.Split(str, "_")
+	j = len(strs)
+	head = postDeserialization(strs)
+	return head
+}
+
+func postDeserialization(strs []string) (head *treeUtil.Node) {
+	j--
+	if strs[j] == "#" {
+		return nil
+	}
+	val, _ := strconv.Atoi(strs[j])
+	head = newNode(val, nil, nil)
+	head.Right = postDeserialization(strs)
+	head.Left = postDeserialization(strs)
+	return head
+}
+
+//后续遍历序列化--递归
+func postOrderSerialization(head *treeUtil.Node) string {
+	if head == nil {
+		return "#"
+	}
+	var res string
+	res += postOrderSerialization(head.Left) + " "
+	res += postOrderSerialization(head.Right) + " "
+	res += fmt.Sprintf("%d", head.Value)
+	return res
+}
+
+//后续遍历序列化--非递归
+func postOrderSerializationUnRecursive(head *treeUtil.Node) string {
+	if head == nil {
+		return ""
+	}
+	stack := make([]*treeUtil.Node, 0)
+	tempStack := make([]*treeUtil.Node, 0)
+	stack = append(stack, head)
+	var res string
+	//var result string
+	for len(stack) != 0 {
+		head = stack[len(stack)-1]
+		tempStack = append(tempStack, head)
+		stack = stack[:len(stack)-1]
+		temp, _ := strconv.Atoi("#")
+		if head.Value == temp {
+			res += "#" + " "
+			continue
+		}
+		res += fmt.Sprintf("%d", head.Value) + " "
+		if head.Left != nil {
+			stack = append(stack, head.Left)
+		} else {
+			val, _ := strconv.Atoi("#")
+			stack = append(stack, &treeUtil.Node{Value: val})
+		}
+		if head.Right != nil {
+			stack = append(stack, head.Right)
+		} else {
+			val, _ := strconv.Atoi("#")
+			stack = append(stack, &treeUtil.Node{Value: val})
+		}
+	}
+	res = res[:len(res)-1]
+	return reverseString(res)
+}
+
+// 反转字符串
+func reverseString(s string) string {
+	runes := []rune(s)
+	for from, to := 0, len(runes)-1; from < to; from, to = from+1, to-1 {
+		runes[from], runes[to] = runes[to], runes[from]
+	}
+	return string(runes)
+}
+
+//层次遍历序列化--非递归
+func levelSerialization(head *treeUtil.Node) string {
+	if head == nil {
+		return ""
+	}
+	var res string
+	queue := make([]*treeUtil.Node, 0)
+	res += fmt.Sprintf("%d", head.Value) + " "
+	queue = append(queue, head)
+	for len(queue) != 0 {
+		value := queue[0]
+		queue = queue[1:]
+		if value.Left != nil {
+			res += fmt.Sprintf("%d", value.Left.Value) + " "
+			queue = append(queue, value.Left)
+		} else {
+			res += "# "
+		}
+		if value.Right != nil {
+			res += fmt.Sprintf("%d", value.Right.Value) + " "
+			queue = append(queue, value.Right)
+		} else {
+			res += "# "
+		}
+	}
+	return res
+}
+
+//层次遍历反序列化
+func levelDeserialization(string2 string) (head *treeUtil.Node) {
+	strs := strings.Split(string2, "_")
+	var index int = 0
+	queue := make([]*treeUtil.Node, 0)
+	head = getChildNode(strs[index])
+	queue = append(queue, head)
+	index++
+	for len(queue) != 0 {
+		node := queue[0]
+		queue = queue[1:]
+		node.Left = getChildNode(strs[index])
+		index++
+		if node.Left != nil {
+			queue = append(queue, node.Left)
+		}
+		node.Right = getChildNode(strs[index])
+		index++
+		if node.Right != nil {
+			queue = append(queue, node.Right)
+		}
+	}
+	return head
+}
+
+func getChildNode(val string) *treeUtil.Node {
+	if "#" == val {
+		return nil
+	} else {
+		nodeVal, _ := strconv.Atoi(val)
+		return newNode(nodeVal, nil, nil)
+	}
 }
