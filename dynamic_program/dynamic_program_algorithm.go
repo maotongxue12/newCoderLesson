@@ -31,7 +31,7 @@ func move(disk int, N string, M string) {
 	fmt.Println("把 ", disk, " 号圆盘从 ", N, " 移到 ", M)
 }
 
-//把n号盘从A移到C，以b为辅助
+//把n号盘从A移到C，以B为辅助
 func hanoi(n int, A string, B string, C string) {
 	if n == 1 {
 		move(1, A, C)
