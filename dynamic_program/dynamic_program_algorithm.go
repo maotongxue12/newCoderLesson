@@ -1,6 +1,9 @@
 package dynamic_program
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 /*
 题目一：求n!的结果
@@ -76,10 +79,94 @@ func processPermutations(str []byte, from, to int) {
 	} else {
 		for i := from; i < to; i++ {
 			str[from], str[i] = str[i], str[from]
+			fmt.Println("递归前str字符串：", string(str))
 			processPermutations(str, from+1, to)
+			fmt.Println("递归后str字符串：", string(str))
 			//当首元素a和第二个元素b交换，递归对后面元素进行全排列之后，要让a元素和第三个元素交换，
 			//但此时第一个元素已经换成了b，所以需要交换回来，保证和后面元素交换的还是首元素a
-			//str[i], str[from] = str[from], str[i]
+			str[i], str[from] = str[from], str[i]
 		}
 	}
 }
+
+//题目五：打印一个字符串的全部排列，要求不要出现重复的排列
+//思路：去重的全排列就是从第一个数字起，每个数分别与它后面非重复出现的数字交换。
+func printPermutationsNoRepeat(str string) {
+	byteStr := []byte(str)
+	processPermutationsNoRepeat(byteStr, 0, len(byteStr))
+}
+
+//在[i, j)区间是否有字符与下标为j的字符相等
+func isSwap(str []byte, i, j int) bool {
+	for index := i; index < j; index++ {
+		if str[index] == str[j] {
+			return false
+		}
+	}
+	return true
+}
+
+func processPermutationsNoRepeat(b []byte, from, to int) {
+	if from == to {
+		fmt.Println(string(b))
+	} else {
+		for i := from ; i < to; i++ {
+			if isSwap(b, from, i) {
+				b[i], b[from] = b[from], b[i]
+				processPermutationsNoRepeat(b, from+1, to)
+				b[i], b[from] = b[from], b[i]
+			}
+		}
+	}
+}
+
+//题目五：母牛每年生一只母牛，新出生的母牛成长三年后也能每年生一只母牛，假设不会死。求N年后，母牛的数量。
+//暴力递归：总结可发现递归方程式为f(n)=f(n-1)+f(n-3)，即前一年的牛加上(n-3)年的牛的数量（n-3的牛经过三年都可以生小牛，f(n-3)即为当前可以生小牛的母牛数量==新出生小牛数量）
+func cowNumber(year int) int {
+	if year < 1 {
+		return 0
+	}
+	if year == 1 || year == 2 || year == 3 {
+		return year
+	}
+	return cowNumber(year-1) + cowNumber(year-3)
+}
+
+//进阶：如果每只母牛只能活10年，求N年后，母牛的数量。
+func cowNumber2(year int) int {
+	if year < 1 {
+		return 0
+	}
+	if year == 1 || year == 2 || year == 3 {
+		return year
+	}
+	if year > 3 && year <= 10 {
+		return cowNumber2(year-1) + cowNumber2(year-3)
+	} else {
+		return cowNumber2(year-1) + cowNumber2(year-3) - cowNumber2(year-10)
+	}
+}
+
+//题目六：
+
+//题目七：给你一个二维数组，二维数组中的每个数都是正数，要求从左上角走到右下角，每一步只能向右或者向下。沿途经过的数字要累
+//加起来。返回最小的路径和。
+//暴力递归：除了最后一列和最后一行外，其余的点都有向右和向下两种走法，则应该取两种路径的最小走法，最后一列只能向下走，最后一行只能向右走
+//baseCase为走到右下角
+func minPath(matrix [][]int) int {
+	return processMinPath(matrix, 0, 0)
+}
+
+func processMinPath(matrix [][]int, cow, column int) int {
+	res := matrix[cow][column]
+	if cow == len(matrix)-1 && column == len(matrix[0])-1 {
+		return res
+	} else if cow == len(matrix)-1 {
+		return res + processMinPath(matrix, cow, column+1)
+	} else if column == len(matrix[0])-1 {
+		return res + processMinPath(matrix, cow + 1, column)
+	} else {
+		return res + int(math.Min(float64(processMinPath(matrix, cow+1, column)), float64(processMinPath(matrix, cow, column+1))))
+	}
+}
+

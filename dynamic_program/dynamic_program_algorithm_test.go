@@ -33,3 +33,29 @@ func TestPrintAllPermutations(t *testing.T) {
 	str = "abc"
 	printAllPermutations(str)
 }
+
+func TestPermutationsNoRepeat(t *testing.T) {
+	str := "abb"
+	printPermutationsNoRepeat(str)
+}
+
+func TestCowNumber(t *testing.T) {
+	fmt.Println(cowNumber(1))
+	fmt.Println(cowNumber(2))
+	fmt.Println(cowNumber(3))
+	fmt.Println(cowNumber(4))
+	fmt.Println(cowNumber(5))
+	fmt.Println(cowNumber(9))
+	fmt.Println(cowNumber(10))
+	fmt.Println(cowNumber(11))
+	fmt.Println(cowNumber(12))
+
+	fmt.Println(cowNumber2(6))
+	fmt.Println(cowNumber2(11))
+	fmt.Println(cowNumber2(12))
+}
+
+func TestProcessMinPath(t *testing.T) {
+	matrix := [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}}
+	fmt.Println(minPath(matrix))
+}
