@@ -176,6 +176,9 @@ func cowNumber2(year int) int {
 //暴力递归：除了最后一列和最后一行外，其余的点都有向右和向下两种走法，则应该取两种路径的最小走法，最后一列只能向下走，最后一行只能向右走
 //baseCase为走到右下角
 func minPath(matrix [][]int) int {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return 0
+	}
 	return processMinPath(matrix, 0, 0)
 }
 
@@ -200,10 +203,13 @@ func processMinPath(matrix [][]int, cow, column int) int {
 //否则，DP[cow, column]对应值为min{processMinPath(matrix, cow+1, column), processMinPath(matrix, cow, column+1)}+matrix[cow][column]
 //由此，可以计算出整个DP表的值
 func minPathDynamic(matrix [][]int) int {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return 0
+	}
 	cow := len(matrix)
 	column := len(matrix[0])
 	dp := make([][]int, cow)
-	for i := 0; i < column; i++ {
+	for i := 0; i < cow; i++ {
 		dp[i] = make([]int, column)
 	}
 	dp[cow-1][column-1] = matrix[cow-1][column-1]

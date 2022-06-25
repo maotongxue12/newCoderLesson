@@ -3,7 +3,9 @@ package dynamic_program
 import (
 	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestGetFibonacci01(t *testing.T) {
@@ -62,9 +64,32 @@ func TestMinPath(t *testing.T) {
 }
 
 func TestMinPathDynamic(t *testing.T) {
-	matrix2 := [][]int{{ 1, 3, 5, 9 }, { 8, 1, 3, 4 }, { 5, 0, 6, 1 }, { 8, 8, 4, 0 }}
-	fmt.Println(minPath(matrix2))
+	times := 10
 	Convey("test minPath function: ", t, func() {
-		So(minPath(matrix2), ShouldEqual, minPathDynamic(matrix2))
+		for i := 0; i < times; i++ {
+			time.Sleep(1*time.Second)
+			matrix := generateRandomArr(10, 10, 20)
+			res := minPath(matrix)
+			resDynmic := minPathDynamic(matrix)
+			fmt.Println(matrix)
+			fmt.Println(res, resDynmic)
+			So(res, ShouldEqual, resDynmic)
+		}
 	})
+}
+
+func generateRandomArr(maxCow, maxColumn, maxValue int) [][]int {
+	rand.Seed(time.Now().UnixNano())
+	cow := rand.Intn(maxCow)
+	column := rand.Intn(maxColumn)
+	matrix := make([][]int, cow)
+	for i := 0; i < cow; i++ {
+		matrix[i] = make([]int, column)
+	}
+	for i := 0; i < cow; i++ {
+		for j := 0; j < column; j++ {
+			matrix[i][j] = rand.Intn(maxValue)
+		}
+	}
+	return matrix
 }
