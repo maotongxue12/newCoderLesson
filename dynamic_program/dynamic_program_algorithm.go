@@ -7,7 +7,7 @@ import (
 
 /*
 题目一：求n!的结果
- */
+*/
 //方法一：暴力递归
 func getFibonacci01(n int) int {
 	if n == 1 || n == 0 {
@@ -23,7 +23,7 @@ func getFibonacci02(n int) int {
 		return res
 	}
 	//由暴力递归可观察，第n个数值的结果仅依赖于第(n-1)的结果，即需要用res记录(n-1)个数值的结果
-	for i := 1; i <=n; i++ {
+	for i := 1; i <= n; i++ {
 		res *= i
 	}
 	return res
@@ -45,11 +45,11 @@ func hanoi(n int, A string, B string, C string) {
 	}
 }
 
-
 //题目三：打印一个字符串的全部子序列，包括空字符串
 //思路：如abc序列，从头遍历，每个索引都包含两种情况，一种是包含该字母，另一种是不包含该字母，如索引为0时，分为包含a和不包含a两种情况，索引为1时，分为包含b和不包含b两种情况，
 //索引为2时，包含包含和不包含c两种情况，当索引为3时，超出索引序列，退出该递归，打印上一级索引序列
 var ans []string
+
 func printAllSub(str string, i int, res string) {
 	if i == len(str) {
 		ans = append(ans, res)
@@ -57,7 +57,7 @@ func printAllSub(str string, i int, res string) {
 		return
 	}
 	//两种情况，包含该索引的字符和不包含该索引的字符
-	printAllSub(str, i+1, res + string(str[i]))
+	printAllSub(str, i+1, res+string(str[i]))
 	printAllSub(str, i+1, res)
 }
 
@@ -110,7 +110,7 @@ func processPermutationsNoRepeat(b []byte, from, to int) {
 	if from == to {
 		fmt.Println(string(b))
 	} else {
-		for i := from ; i < to; i++ {
+		for i := from; i < to; i++ {
 			if isSwap(b, from, i) {
 				b[i], b[from] = b[from], b[i]
 				processPermutationsNoRepeat(b, from+1, to)
@@ -130,6 +130,28 @@ func cowNumber(year int) int {
 		return year
 	}
 	return cowNumber(year-1) + cowNumber(year-3)
+}
+
+//动态规划思想：动态规划实质是对暴力递归试法的一种改善，用一个表保留递归过程中计算值，避免递归造成的重复计算
+//暴力递归->优化为动态规划，需要为无后效性问题，即当前状态的返回值和之前的轨迹无关，之和问题本身有关
+//由暴力递归试法可知，第n年的牛数依赖于n-1年和n-3年，base case为前三年的母牛数
+func cowNumberDynamic(year int) int {
+	if year == 1 || year == 2 || year == 3 {
+		return year
+	}
+	res := 3
+	pre := 2
+	prePre := 1
+	//可以理解为建立一个deep表，维护当前年份的前三年的母牛数目即可
+	for i := 4; i <= year; i++ {
+		tmp1 := res
+		tmp2 := pre
+		//当前年的母牛等于前面一年的母牛数（n-1年）+前面3年的母牛数（n-3年）
+		res = res + prePre
+		pre = tmp1
+		prePre = tmp2
+	}
+	return res
 }
 
 //进阶：如果每只母牛只能活10年，求N年后，母牛的数量。
@@ -164,9 +186,40 @@ func processMinPath(matrix [][]int, cow, column int) int {
 	} else if cow == len(matrix)-1 {
 		return res + processMinPath(matrix, cow, column+1)
 	} else if column == len(matrix[0])-1 {
-		return res + processMinPath(matrix, cow + 1, column)
+		return res + processMinPath(matrix, cow+1, column)
 	} else {
 		return res + int(math.Min(float64(processMinPath(matrix, cow+1, column)), float64(processMinPath(matrix, cow, column+1))))
 	}
 }
 
+//动态规划解法：观察暴力递归试法，当前状态与其他状态的规律，当前processMinPath结果仅受参数cow和column影响
+//则需要建立一个二维的DP表，横坐标表示column， 纵坐标表示cow，维护processMinPath值的结果
+//对应二维表数值的计算规律：当cow == len(matrix)-1 && column == len(matrix[0])-1，DP[cow, column]值为matrix[cow][column]
+//当cow == len(matrix)-1时，DP[cow, column]对应值为matrix[cow][column]+processMinPath(matrix, cow, column+1),即matrix[cow][column]+DP表下一列的值
+//column == len(matrix[0])-1, DP[cow, column]对应值为matrix[cow][column]+processMinPath(matrix, cow+1, column),即matrix[cow][column]+DP表下一行的值
+//否则，DP[cow, column]对应值为min{processMinPath(matrix, cow+1, column), processMinPath(matrix, cow, column+1)}+matrix[cow][column]
+//由此，可以计算出整个DP表的值
+func minPathDynamic(matrix [][]int) int {
+	cow := len(matrix)
+	column := len(matrix[0])
+	dp := make([][]int, cow)
+	for i := 0; i < column; i++ {
+		dp[i] = make([]int, column)
+	}
+	dp[cow-1][column-1] = matrix[cow-1][column-1]
+	//计算dp表的最后一列元素值
+	for i := cow - 2; i >= 0; i-- {
+		dp[i][column-1] = matrix[i][column-1] + dp[i+1][column-1]
+	}
+	//计算dp表的最后一行元素值
+	for i := column - 2; i >= 0; i-- {
+		dp[cow-1][i] = matrix[cow-1][i] + dp[cow-1][i+1]
+	}
+	//计算dp表的中间元素值
+	for i := cow - 2; i >= 0; i-- {
+		for j := column - 2; j >= 0; j-- {
+			dp[i][j] = matrix[i][j] + int(math.Min(float64(dp[i+1][j]), float64(dp[i][j+1])))
+		}
+	}
+	return dp[0][0]
+}
