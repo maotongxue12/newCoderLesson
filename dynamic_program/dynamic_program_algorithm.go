@@ -169,7 +169,7 @@ func cowNumber2(year int) int {
 	}
 }
 
-//题目六：
+//题目六：给你一个栈，请你逆序这个栈，不能申请额外的数据结构，只能使用递归函数。如何实现？
 
 //题目七：给你一个二维数组，二维数组中的每个数都是正数，要求从左上角走到右下角，每一步只能向右或者向下。沿途经过的数字要累
 //加起来。返回最小的路径和。
@@ -228,4 +228,82 @@ func minPathDynamic(matrix [][]int) int {
 		}
 	}
 	return dp[0][0]
+}
+
+//题目八：给你一个数组arr，和一个整数aim。如果可以任意选择arr中的数字，能不能累加得到aim，返回true或者false
+//暴力递归：可以参考题目三，打印字符串全部子序列的思想，如数组[2, 5, 6], aim=8，状态值为process(arr, i, preSum, aim)，其中
+//i表示当前索引值，preSum表示累加到当前索引的前一个的索引的累加和，如process(arr, 1, 2, aim)表示索引值为1时，累加到索引值为0的和为2
+//且每种索引有两种情况：（1）包含当前该索引值(index-1)的累加和（2）不包含当前索引值(index-1)的累加和
+func arrSum(arr []int, aim int) bool {
+	return processArrSum(arr, 0, 0, aim)
+}
+
+func processArrSum(arr []int, index, preSum, aim int) bool {
+	//计算累加到数组最后一个数字的累加和时，递归方程中index应该为数组长度
+	if index == len(arr) {
+		if preSum == aim {
+			return true
+		} else {
+			return false
+		}
+	}
+	//当前索引值的前一个索引的累加和分为包含arr[index]和不包含arr[index]两种情况
+	return processArrSum(arr, index+1, preSum, aim) || processArrSum(arr, index+1, preSum+arr[index], aim)
+}
+
+//动态规划解法：状态方程即为上述的递归方程式，以index和preSum构建DP表，记录状态方程的状态值,DP表的行表示index[0, len(arr)+1]，列为prSum值[0， preSum]
+func arrSumDynamic(arr []int, aim int) bool {
+	if len(arr) == 0 {
+		return false
+	}
+	cow := len(arr)
+	var column int
+	for _, val := range arr {
+		column += val
+	}
+	if aim > column {
+		return false
+	}
+	dp := make([][]bool, cow+1)
+	for i := 0; i <= cow; i++ {
+		dp[i] = make([]bool, column+1)
+	}
+	//计算dp表记录对应状态值，由暴力递归的base case可知，当index=len(arr)时，preSum=aim时，即dp[cow][aim]=true
+	//由暴力递归的函数可推知状态方程：dp[i][j]=dp[i+1][j] || dp[i+1][j+arr[i]]
+	for i := 0; i <= cow; i++ {
+		//由dp状态方程可知，dp[cow][aim]为true时，dp[cow-1][aim]=true ... dp[0][aim]=true
+		//dp[cow][0]=false, dp[cow][1]=false, ... , dp[cow][aim-1]=false, dp[cow][aim]=true, dp[cow][aim+1]=false, ... dp[cow][column]=false
+		dp[i][aim] = true
+	}
+	//dp[cow][aim] = true
+	for i := cow-1; i >= 0; i-- {
+		for j := 0; j <= column; j++ {
+			dp[i][j] = dp[i+1][j]
+			if j + arr[i] <= column {
+				dp[i][j] = dp[i+1][j] || dp[i+1][j+arr[i]]
+			}
+		}
+	}
+	return dp[0][0]
+}
+
+
+//题目九：给定两个数组w和v，两个数组长度相等，w[i]表示第i件商品的重量，v[i]表示第i件商品的价值。再给定一个整数bag，要求你挑选商品的重量加起来一定不能超过bag，
+//返回满足这个条件下，你能获得的最大价值。
+//背包问题，暴力递归法: 解题思路同题目三和题目八：计算价值数组所有可能子序列的和，递归试法时包含两种情况：包含当前索引值和不包含当前索引值
+func knapsack(w, v []int, bag int) int {
+	//alreadyWeight表示之前所作决定形成的重量
+	return processKnapsack(w, v, 0, 0, bag)
+}
+
+func processKnapsack(w, v []int, index, alreadyWeight, bag int) int {
+	//base case
+	//当此时重量超过bag值时，则该选择方案不合理，直接把价值置为0
+	if alreadyWeight > bag {
+		return 0
+	}
+	//当索引超过数组长度时，index之后返回的价值肯定是0
+	if index > len(w) {
+		return 0
+	}
 }

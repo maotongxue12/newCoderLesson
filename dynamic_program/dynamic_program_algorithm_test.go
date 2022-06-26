@@ -78,6 +78,26 @@ func TestMinPathDynamic(t *testing.T) {
 	})
 }
 
+func TestArrSum(t *testing.T) {
+	times := 10
+	aim := 20
+	arr := make([]int, 6)
+	for i := 0; i < times; i++ {
+		rand.Seed(time.Now().UnixNano())
+		for j := 0; j < len(arr); j++ {
+			arr[j] = rand.Intn(20)
+		}
+		Convey("test arrSum function: ", t, func() {
+			res := arrSum(arr, aim)
+			resDynamic := arrSumDynamic(arr, aim)
+			fmt.Println(res, resDynamic)
+			fmt.Println(arr)
+			So(res, ShouldEqual, resDynamic)
+		})
+		time.Sleep(time.Second)
+	}
+}
+
 func generateRandomArr(maxCow, maxColumn, maxValue int) [][]int {
 	rand.Seed(time.Now().UnixNano())
 	cow := rand.Intn(maxCow)
