@@ -276,17 +276,16 @@ func arrSumDynamic(arr []int, aim int) bool {
 		dp[i][aim] = true
 	}
 	//dp[cow][aim] = true
-	for i := cow-1; i >= 0; i-- {
+	for i := cow - 1; i >= 0; i-- {
 		for j := 0; j <= column; j++ {
 			dp[i][j] = dp[i+1][j]
-			if j + arr[i] <= column {
+			if j+arr[i] <= column {
 				dp[i][j] = dp[i+1][j] || dp[i+1][j+arr[i]]
 			}
 		}
 	}
 	return dp[0][0]
 }
-
 
 //题目九：给定两个数组w和v，两个数组长度相等，w[i]表示第i件商品的重量，v[i]表示第i件商品的价值。再给定一个整数bag，要求你挑选商品的重量加起来一定不能超过bag，
 //返回满足这个条件下，你能获得的最大价值。
@@ -298,12 +297,46 @@ func knapsack(w, v []int, bag int) int {
 
 func processKnapsack(w, v []int, index, alreadyWeight, bag int) int {
 	//base case
-	//当此时重量超过bag值时，则该选择方案不合理，直接把价值置为0
+	//当此时重量超过bag值时，则当前索引值不能被加入该商品集中，直接把当前价值返回0
 	if alreadyWeight > bag {
-		return 0
+		return -1
 	}
 	//当索引超过数组长度时，index之后返回的价值肯定是0
-	if index > len(w) {
+	if index == len(w) {
 		return 0
 	}
+	return int(
+		math.Max(float64(processKnapsack(w, v, index+1, alreadyWeight, bag)),
+			float64(v[index]+processKnapsack(w, v, index+1, alreadyWeight+w[index], bag))),
+	)
+}
+
+//动态规划思想：dp状态方程：processKnapsack(w, v, index, alreadyWeight, bag)=math.Max(processKnapsack(w, v, index+1, alreadyWeight, bag),
+//v[index]+processKnapsack(w, v, index+1, alreadyWeight+w[index], bag))
+//则可以以index, totalWeight为行和列构建dp表， 且dp[.][bag+1]=0, 即bag左边的列值都置为0
+//dp[cow][.]=0, 即最后一行都置为0
+func knapsackDynamic(w, v []int, bag int) int {
+	var totalWeight int
+	for _, val := range w {
+		totalWeight += val
+	}
+	if bag > totalWeight {
+		return 0
+	}
+	cow := len(w)
+	//初始化dp表
+	dp := make([][]int, cow+1)
+	for i := 0; i <= cow; i++ {
+		dp[i] = make([]int, totalWeight+1)
+	}
+	//dp表最后一行和bag左列的值为0，即可以保持初始默认值
+	for i := cow-1; i >= 0; i-- {
+		for j := 0; j <= totalWeight; j++ {
+			dp[i][j] = dp[i+1][j]
+			if j+w[i] <= totalWeight {
+				dp[i][j] = int(math.Max(float64(dp[i+1][j]), float64(v[i]+dp[i+1][j+w[i]])))
+			}
+		}
+	}
+	return dp[0][0]
 }

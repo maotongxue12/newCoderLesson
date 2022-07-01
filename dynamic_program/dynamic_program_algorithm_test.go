@@ -98,6 +98,33 @@ func TestArrSum(t *testing.T) {
 	}
 }
 
+func TestKnapsack(t *testing.T) {
+	times := 5
+	arrA := make([]int, 6)
+	arrB := make([]int, 6)
+	bag := 40
+	for i := 0; i < times; i++ {
+		rand.Seed(time.Now().UnixNano())
+		for j := 0; j < len(arrA); j++ {
+			arrA[j] = rand.Intn(20)
+		}
+		time.Sleep(500*time.Millisecond)
+		rand.Seed(time.Now().UnixNano())
+		for j := 0; j < len(arrB); j++ {
+			arrB[j] = rand.Intn(20)
+		}
+		fmt.Println(arrA, arrB)
+		Convey("test knapsack function: ", t, func() {
+			res := knapsack(arrA, arrB, bag)
+			resDynamic := knapsackDynamic(arrA, arrB, bag)
+			res2Dynamic := test_2_wei_bag_problem1(arrA, arrB, bag)
+			fmt.Println(res, resDynamic, res2Dynamic)
+			So(res, ShouldEqual, resDynamic)
+		})
+		time.Sleep(500*time.Millisecond)
+	}
+}
+
 func generateRandomArr(maxCow, maxColumn, maxValue int) [][]int {
 	rand.Seed(time.Now().UnixNano())
 	cow := rand.Intn(maxCow)
