@@ -1,4 +1,4 @@
-package main
+package sort
 
 import (
 	"fmt"
@@ -206,11 +206,11 @@ func heapInsert(arr []int, index int) {
 }
 
 func heapify(arr []int, index int, size int) {
-	left := index * 2 + 1
+	left := index*2 + 1
 	var largest int
-	for left <= size{
+	for left <= size {
 		if left+1 <= size && arr[left] < arr[left+1] {
-			largest = left+1
+			largest = left + 1
 		} else {
 			largest = left
 		}
@@ -222,7 +222,7 @@ func heapify(arr []int, index int, size int) {
 		}
 		arr[largest], arr[index] = arr[index], arr[largest]
 		index = largest
-		left = index * 2 + 1
+		left = index*2 + 1
 	}
 }
 
@@ -230,7 +230,7 @@ func heapSort(arr []int) {
 	for i := 0; i < len(arr); i++ {
 		heapInsert(arr, i)
 	}
-	size := len(arr)-1
+	size := len(arr) - 1
 	for size > 0 {
 		arr[0], arr[size] = arr[size], arr[0]
 		size--

@@ -56,10 +56,22 @@ func TestCowNumber(t *testing.T) {
 	fmt.Println(cowNumber2(12))
 }
 
+func TestReverseStack(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	length := rand.Intn(10)
+	arr := make([]int, length)
+	for i := 0; i < length; i++ {
+		arr[i] = rand.Intn(20)
+	}
+	fmt.Println(arr)
+	reverseStack(&arr)
+	fmt.Println(arr)
+}
+
 func TestMinPath(t *testing.T) {
 	matrix := [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}}
 	fmt.Println(minPath(matrix))
-	matrix2 := [][]int{{ 1, 3, 5, 9 }, { 8, 1, 3, 4 }, { 5, 0, 6, 1 }, { 8, 8, 4, 0 }}
+	matrix2 := [][]int{{1, 3, 5, 9}, {8, 1, 3, 4}, {5, 0, 6, 1}, {8, 8, 4, 0}}
 	fmt.Println(minPath(matrix2))
 }
 
@@ -67,7 +79,7 @@ func TestMinPathDynamic(t *testing.T) {
 	times := 10
 	Convey("test minPath function: ", t, func() {
 		for i := 0; i < times; i++ {
-			time.Sleep(1*time.Second)
+			time.Sleep(1 * time.Second)
 			matrix := generateRandomArr(10, 10, 20)
 			res := minPath(matrix)
 			resDynmic := minPathDynamic(matrix)
@@ -99,16 +111,16 @@ func TestArrSum(t *testing.T) {
 }
 
 func TestKnapsack(t *testing.T) {
-	times := 5
+	times := 10
 	arrA := make([]int, 6)
 	arrB := make([]int, 6)
-	bag := 40
+	bag := 30
 	for i := 0; i < times; i++ {
 		rand.Seed(time.Now().UnixNano())
 		for j := 0; j < len(arrA); j++ {
 			arrA[j] = rand.Intn(20)
 		}
-		time.Sleep(500*time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		rand.Seed(time.Now().UnixNano())
 		for j := 0; j < len(arrB); j++ {
 			arrB[j] = rand.Intn(20)
@@ -117,11 +129,10 @@ func TestKnapsack(t *testing.T) {
 		Convey("test knapsack function: ", t, func() {
 			res := knapsack(arrA, arrB, bag)
 			resDynamic := knapsackDynamic(arrA, arrB, bag)
-			res2Dynamic := test_2_wei_bag_problem1(arrA, arrB, bag)
-			fmt.Println(res, resDynamic, res2Dynamic)
+			fmt.Println(res, resDynamic)
 			So(res, ShouldEqual, resDynamic)
 		})
-		time.Sleep(500*time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 

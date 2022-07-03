@@ -5,6 +5,11 @@ import (
 	"math"
 )
 
+const (
+	INT_MAX = int(^uint(0) >> 1)
+	INT_MIN = ^INT_MAX
+)
+
 /*
 题目一：求n!的结果
 */
@@ -170,6 +175,29 @@ func cowNumber2(year int) int {
 }
 
 //题目六：给你一个栈，请你逆序这个栈，不能申请额外的数据结构，只能使用递归函数。如何实现？
+//暴力递归思路：首先实现一个函数，能够将栈传进这个函数以后，返回栈底的元素，并且栈底上面的元素依次盖下来，即逆序取栈的元素
+func removeAndReturnBottomElement(stack *[]int) int {
+	res := (*stack)[len(*stack)-1]
+	*stack = (*stack)[0 : len(*stack)-1]
+	if len(*stack) == 0 {
+		return res
+	} else {
+		//返回栈底元素
+		last := removeAndReturnBottomElement(stack)
+		//利用递归中栈会保存过程中的变量
+		*stack = append(*stack, res)
+		return last
+	}
+}
+
+func reverseStack(stack *[]int) {
+	if len(*stack) == 0 {
+		return
+	}
+	val := removeAndReturnBottomElement(stack)
+	reverseStack(stack)
+	*stack = append(*stack, val)
+}
 
 //题目七：给你一个二维数组，二维数组中的每个数都是正数，要求从左上角走到右下角，每一步只能向右或者向下。沿途经过的数字要累
 //加起来。返回最小的路径和。
@@ -297,31 +325,41 @@ func knapsack(w, v []int, bag int) int {
 
 func processKnapsack(w, v []int, index, alreadyWeight, bag int) int {
 	//base case
-	//当此时重量超过bag值时，则当前索引值不能被加入该商品集中，直接把当前价值返回0
+	//当此时重量超过bag值时，则当前索引值不能被加入该商品集中.该方案舍弃
+	//返回值要保证加上v[index]之后不会比不加v[index]的大，否则，return上级函数时还会取这个方案
 	if alreadyWeight > bag {
-		return -1
+		return INT_MIN
 	}
 	//当索引超过数组长度时，index之后返回的价值肯定是0
 	if index == len(w) {
 		return 0
 	}
-	return int(
+	subRes01 := processKnapsack(w, v, index+1, alreadyWeight, bag)
+	alreadyWeight = alreadyWeight + w[index]
+	subRes02 := v[index] + processKnapsack(w, v, index+1, alreadyWeight, bag)
+	maxRes := math.Max(float64(subRes01), float64(subRes02))
+	return int(maxRes)
+	/*return int(
 		math.Max(float64(processKnapsack(w, v, index+1, alreadyWeight, bag)),
 			float64(v[index]+processKnapsack(w, v, index+1, alreadyWeight+w[index], bag))),
-	)
+	)*/
 }
 
 //动态规划思想：dp状态方程：processKnapsack(w, v, index, alreadyWeight, bag)=math.Max(processKnapsack(w, v, index+1, alreadyWeight, bag),
 //v[index]+processKnapsack(w, v, index+1, alreadyWeight+w[index], bag))
-//则可以以index, totalWeight为行和列构建dp表， 且dp[.][bag+1]=0, 即bag左边的列值都置为0
+//则可以以index, totalWeight为行和列构建dp表， 且dp[.][bag+1]=INT_MIN, bag左边的列值都置为最小值，即当alreadyWeight大于bag时，保证不会采用该方案
 //dp[cow][.]=0, 即最后一行都置为0
 func knapsackDynamic(w, v []int, bag int) int {
 	var totalWeight int
 	for _, val := range w {
 		totalWeight += val
 	}
-	if bag > totalWeight {
-		return 0
+	var totalVal int
+	for _, val := range v {
+		totalVal += val
+	}
+	if bag >= totalWeight {
+		return totalVal
 	}
 	cow := len(w)
 	//初始化dp表
@@ -329,8 +367,15 @@ func knapsackDynamic(w, v []int, bag int) int {
 	for i := 0; i <= cow; i++ {
 		dp[i] = make([]int, totalWeight+1)
 	}
-	//dp表最后一行和bag左列的值为0，即可以保持初始默认值
-	for i := cow-1; i >= 0; i-- {
+
+	//dp表bag 右列值置为最小值
+	for i := 0; i <= cow; i++ {
+		for j := bag + 1; j <= totalWeight; j++ {
+			dp[i][j] = INT_MIN
+		}
+	}
+	//dp表最后一行值为0，即可以保持初始默认值
+	for i := cow - 1; i >= 0; i-- {
 		for j := 0; j <= totalWeight; j++ {
 			dp[i][j] = dp[i+1][j]
 			if j+w[i] <= totalWeight {
