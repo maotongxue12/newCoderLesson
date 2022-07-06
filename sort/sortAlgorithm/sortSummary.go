@@ -29,6 +29,24 @@ func insertSort(arr []int) {
 	}
 }
 
+//希尔排序
+func shellSort(arr []int) {
+	for gap := len(arr) / 2; gap >= 1; gap /= 2 {
+		for i := gap; i < len(arr); i += gap {
+			temp := arr[i]
+			j := i - gap
+			for ; j >= 0; j -= gap {
+				if arr[j] > temp {
+					arr[j+gap] = arr[j]
+				} else {
+					break
+				}
+			}
+			arr[j+gap] = temp
+		}
+	}
+}
+
 //选择排序
 func selectSort(arr []int) {
 	for i := 0; i < len(arr); i++ {
@@ -110,6 +128,82 @@ func process02(arr []int, left, right int) (int, int) {
 }
 
 //归并排序
-func mergeSort(arr []int) {
+func mergeSort(arr []int, left, right int) {
+	if left >= right {
+		return
+	}
+	mid := left + (right-left)>>2
+	mergeSort(arr, left, mid)
+	mergeSort(arr, mid+1, right)
+	mergeProcess(arr, left, mid, right)
+}
 
+func mergeProcess(arr []int, left, mid, right int) {
+	var temp []int
+	i := left
+	j := mid + 1
+	for i <= mid && j <= right {
+		if arr[i] <= arr[j] {
+			temp = append(temp, arr[i])
+			i++
+		} else {
+			temp = append(temp, arr[j])
+			j++
+		}
+	}
+	for i <= mid {
+		temp = append(temp, arr[i])
+		i++
+	}
+	for j <= right {
+		temp = append(temp, arr[j])
+		j++
+	}
+	for k := 0; k < len(temp); k++ {
+		arr[left+k] = temp[k]
+	}
+}
+
+//堆排序--大根堆
+func maxHeap(arr []int) {
+	size := len(arr)
+	//构建大根堆
+	for i := 0; i < len(arr); i++ {
+		heapInsert(arr, i)
+	}
+	for size > 0 {
+		size--
+		arr[0], arr[size] = arr[size], arr[0]
+		heapify(arr, 0, size)
+	}
+}
+
+//构建大根堆
+func heapInsert(arr []int, index int) {
+	for index > 0 {
+		parent := (index - 1) / 2
+		if arr[index] > arr[parent] {
+			arr[index], arr[parent] = arr[parent], arr[index]
+		}
+		index = parent
+	}
+}
+
+func heapify(arr []int, index, size int) {
+	left := index*2 + 1
+	largest := index
+	for left < size {
+		right := left + 1
+		if right < size && arr[right] > arr[left] {
+			largest = right
+		} else {
+			largest = left
+		}
+		if arr[index] > arr[largest] {
+			break
+		}
+		arr[largest], arr[index] = arr[index], arr[largest]
+		index = largest
+		left = index*2 + 1
+	}
 }

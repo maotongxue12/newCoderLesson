@@ -41,6 +41,22 @@ func TestInsertSort(t *testing.T) {
 	}
 }
 
+func TestShellSort(t *testing.T) {
+	times := 20
+	for i := 0; i < times; i++ {
+		arr1 := generateRandomArr(10, 20)
+		arr2 := make([]int, len(arr1))
+		copy(arr2, arr1)
+		fmt.Println(arr1, arr2)
+		sort.Ints(arr1)
+		shellSort(arr2)
+		fmt.Println(arr1, arr2)
+		Convey("test bubbleSort algorithm", t, func() {
+			So(arr1, ShouldResemble, arr2)
+		})
+	}
+}
+
 func TestSelectSort(t *testing.T) {
 	times := 5
 	for i := 0; i < times; i++ {
@@ -82,6 +98,38 @@ func TestQuickSort02(t *testing.T) {
 		fmt.Println(arr1, arr2)
 		sort.Ints(arr1)
 		quickSort02(arr2, 0, len(arr2)-1)
+		fmt.Println(arr1, arr2)
+		Convey("test bubbleSort algorithm", t, func() {
+			So(arr1, ShouldResemble, arr2)
+		})
+	}
+}
+
+func TestMergeSort(t *testing.T) {
+	times := 10
+	for i := 0; i < times; i++ {
+		arr1 := generateRandomArr(10, 20)
+		arr2 := make([]int, len(arr1))
+		copy(arr2, arr1)
+		fmt.Println(arr1, arr2)
+		sort.Ints(arr1)
+		mergeSort(arr2, 0, len(arr2)-1)
+		fmt.Println(arr1, arr2)
+		Convey("test bubbleSort algorithm", t, func() {
+			So(arr1, ShouldResemble, arr2)
+		})
+	}
+}
+
+func TestMaxHeap(t *testing.T) {
+	times := 20
+	for i := 0; i < times; i++ {
+		arr1 := generateRandomArr(10, 20)
+		arr2 := make([]int, len(arr1))
+		copy(arr2, arr1)
+		fmt.Println(arr1, arr2)
+		sort.Ints(arr1)
+		maxHeap(arr2)
 		fmt.Println(arr1, arr2)
 		Convey("test bubbleSort algorithm", t, func() {
 			So(arr1, ShouldResemble, arr2)
