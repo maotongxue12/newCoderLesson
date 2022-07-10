@@ -1,4 +1,4 @@
-package sortAlgorithm
+package sortalgorithm
 
 import (
 	"fmt"
