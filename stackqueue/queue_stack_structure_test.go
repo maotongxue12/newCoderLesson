@@ -47,3 +47,49 @@ func TestNewStack(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 }
+
+func TestNewSpecialStack(t *testing.T) {
+	sStack := newSpecialStack(5)
+	Convey("test the specialStack function", t, func() {
+		sStack.push(5)
+		sStack.push(4)
+		sStack.push(8)
+		sStack.push(2)
+		sStack.push(8)
+		minValue, _ := sStack.getMin()
+		So(minValue, ShouldEqual, 2)
+		sStack.pop()
+		minValue, _ = sStack.getMin()
+		So(minValue, ShouldEqual, 2)
+		sStack.pop()
+		minValue, _ = sStack.getMin()
+		So(minValue, ShouldEqual, 4)
+		sStack.pop()
+		sStack.pop()
+		minValue, _ = sStack.getMin()
+		So(minValue, ShouldEqual, 5)
+	})
+}
+
+func TestNewQueueToStack(t *testing.T) {
+	stack := newQueueToStack(5)
+	Convey("tesh the queueToStack function", t, func() {
+		stack.push(5)
+		stack.push(4)
+		stack.push(3)
+		val, _ := stack.front()
+		So(3, ShouldEqual, val)
+		stack.pop()
+		val, _ = stack.front()
+		So(4, ShouldEqual, val)
+		stack.pop()
+		val, _ = stack.front()
+		So(5, ShouldEqual, val)
+		stack.pop()
+		_, err := stack.front()
+		So(err, ShouldNotBeNil)
+		stack.push(7)
+		val, _ = stack.front()
+		So(7, ShouldEqual, val)
+	})
+}

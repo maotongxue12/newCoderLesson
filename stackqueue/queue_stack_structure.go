@@ -111,3 +111,133 @@ func (s *stack) top() (val int, err error) {
 	val = s.value[s.index-1]
 	return val, nil
 }
+
+//题目三：实现一个特殊的栈，在实现栈的基本功能的基础上，再实现返回栈中最小元素的操作
+//思路：考虑用两个切片模拟两个栈，一个栈作为实际存储数据的栈，另一个栈作为辅助栈，存储当前栈中元素的最小元素
+//且与实际栈中元素相对应
+type specialStack struct {
+	normalStack *stack
+	auxiliaryStack *stack
+}
+
+func newSpecialStack(size int) *specialStack {
+	return &specialStack{
+		normalStack: newStack(size),
+		auxiliaryStack: newStack(size),
+	}
+}
+
+func (s *specialStack)push(val int) (err error) {
+	data, _ := s.auxiliaryStack.top();
+	//保证auxiliaryStack中保存元素为当前normalStack中元素的最小值
+	if s.auxiliaryStack.length() == 0 || val < data {
+		err = s.auxiliaryStack.push(val)
+	} else {
+		err = s.auxiliaryStack.push(data)
+	}
+	if err != nil {
+		return errors.New("the stack is rull")
+	}
+	s.normalStack.push(val)
+	return nil
+}
+
+func (s *specialStack) pop() error {
+	if s.normalStack.length() == 0 {
+		return errors.New("the stack is empty")
+	}
+	s.normalStack.pop()
+	s.auxiliaryStack.pop()
+	return nil
+}
+
+func (s *specialStack) top() (val int, err error) {
+	if s.normalStack.length() == 0 {
+		return val, errors.New("the stack is empty")
+	}
+	val, _ = s.normalStack.top()
+	return val, nil
+}
+
+func (s *specialStack) getMin() (val int, err error) {
+	if s.normalStack.length() == 0 {
+		return val, errors.New("the stack is empty")
+	}
+	val, _ = s.auxiliaryStack.top()
+	return val, nil
+}
+
+//题目四：如何仅用队列结构实现栈结构？
+//思路：采用两个队列，一个normal队列，入栈时即正常入队，一个辅助队列，入栈时不操作
+//出栈时先把队列中的n-1个元素压入辅助队列，然后弹出normal队列的最后一个值，即实现了后进先出
+type queueToStack struct {
+	normalQueue *queue
+	auxiliaryQueue *queue
+}
+
+func newQueueToStack(size int) *queueToStack {
+	return &queueToStack{
+		normalQueue: newQueue(size),
+		auxiliaryQueue: newQueue(size),
+	}
+}
+
+func (s *queueToStack) isEmpty() bool {
+	if s.normalQueue.length() == 0 {
+		return true
+	}
+	return false
+}
+
+func (s *queueToStack) length() int {
+	return s.normalQueue.length()
+}
+func (s *queueToStack) push(val int) error {
+	if err := s.normalQueue.push(val); err != nil {
+		return errors.New("the stack is full")
+	}
+	return nil
+}
+
+func (s *queueToStack) pop() (val int, err error) {
+	if s.normalQueue.length() == 0 {
+		return val, errors.New("the stack is empty")
+	}
+	len := s.normalQueue.length()
+	for i := 0; i < len-1; i++ {
+		val, _ = s.normalQueue.front()
+		s.normalQueue.pop()
+		s.auxiliaryQueue.push(val)
+	}
+	val, _ = s.normalQueue.front()
+	s.normalQueue.pop()
+	len = s.auxiliaryQueue.length()
+	for i := 0; i < len; i++ {
+		tmp, _ := s.auxiliaryQueue.front()
+		s.normalQueue.push(tmp)
+		s.auxiliaryQueue.pop()
+	}
+	return val, nil
+}
+
+func (s *queueToStack) front() (val int, err error) {
+	if s.normalQueue.length() == 0 {
+		return val, errors.New("the stack is empty")
+	}
+	len := s.normalQueue.length()
+	for i := 0; i < len; i++ {
+		val, _ = s.normalQueue.front()
+		s.normalQueue.pop()
+		s.auxiliaryQueue.push(val)
+	}
+	len = s.auxiliaryQueue.length()
+	for i := 0; i < len; i++ {
+		tmp, _ := s.auxiliaryQueue.front()
+		s.normalQueue.push(tmp)
+		s.auxiliaryQueue.pop()
+	}
+	return val, nil
+}
+
+//题目五：如何仅用栈结构实现队列结构？
+//思路：
