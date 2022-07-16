@@ -33,8 +33,9 @@ func (q *queue) isEmpty() bool {
 	return false
 }
 
+//可采用设置一个空位置，以此来判断是否栈满；也可以增加计数变量size，直接根据size判断栈是否满
 func (q *queue) push(val int) error {
-	if (q.last-q.first+len(q.value))%len(q.value) == len(q.value) {
+	if (q.last-q.first+len(q.value))%len(q.value) == len(q.value)-1 {
 		return errors.New("the queue is full")
 	}
 	q.value[q.last] = val
@@ -59,7 +60,6 @@ func (q *queue) front() (val int, err error) {
 	val = q.value[q.first]
 	return val, err
 }
-
 
 //题目二：用数组实现栈结构
 //解题思路：栈，先进后出
@@ -240,4 +240,67 @@ func (s *queueToStack) front() (val int, err error) {
 }
 
 //题目五：如何仅用栈结构实现队列结构？
-//思路：
+//思路：normal 栈用于入队，auxiliary栈用于数据弹出时，先将normal栈中数据弹出压入auxiliary栈中
+//然后从auxiliary中弹出；原则一：当将normal栈中数据压入auxiliary栈中时，一次性将normal全部弹出
+//原则二：当auxiliary栈为空时，才能开始将normal中数据压入auxiliary中
+type stackToQueue struct {
+	normalStack *stack
+	auxiliaryStack *stack
+}
+
+func newStackToQueue(size int) *stackToQueue{
+	return &stackToQueue{
+		normalStack: newStack(size),
+		auxiliaryStack: newStack(size),
+	}
+}
+
+func (s *stackToQueue) empty() bool {
+	if s.normalStack.length() == 0 && s.auxiliaryStack.length() == 0 {
+		return true
+	}
+	return false
+}
+
+func (s *stackToQueue) length() int {
+	return s.normalStack.length() + s.auxiliaryStack.length()
+}
+
+func (s *stackToQueue) push(val int) error {
+	if err := s.normalStack.push(val); err != nil {
+		return errors.New("the stack is full")
+	}
+	return nil
+}
+
+func (s *stackToQueue) pop() error {
+	len := s.normalStack.length()
+	if s.auxiliaryStack.isEmpty() {
+		for i := 0; i < len; i++ {
+			tmp, _ := s.normalStack.top()
+			s.normalStack.pop()
+			s.auxiliaryStack.push(tmp)
+		}
+	}
+	err := s.auxiliaryStack.pop()
+	if err != nil {
+		return errors.New("the stack is empty")
+	}
+	return nil
+}
+
+func (s *stackToQueue) top() (val int, err error) {
+	len := s.normalStack.length()
+	if s.auxiliaryStack.isEmpty() {
+		for i := 0; i < len; i++ {
+			tmp, _ := s.normalStack.top()
+			s.normalStack.pop()
+			s.auxiliaryStack.push(tmp)
+		}
+	}
+	val, err = s.auxiliaryStack.top()
+	if err != nil {
+		return val, errors.New("the stack is empty")
+	}
+	return val, nil
+}

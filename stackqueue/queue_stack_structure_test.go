@@ -7,15 +7,23 @@ import (
 )
 
 func TestNewQueue(t *testing.T) {
-	que := newQueue(5)
-	que.push(5)
-	que.push(4)
-	fmt.Println(que.length())
-	que.push(3)
-	fmt.Println(que.length())
-	que.pop()
-	fmt.Println(que.front())
-	fmt.Println(que.length())
+	Convey("test the arrToQueue function", t, func() {
+		que := newQueue(5)
+		que.push(5)
+		que.push(4)
+		fmt.Println(que.length())
+		que.push(3)
+		fmt.Println(que.length())
+		que.pop()
+		fmt.Println(que.front())
+		fmt.Println(que.length())
+		que.push(2)
+		que.push(1)
+		que.push(0)
+		err := que.push(8)
+		So(err, ShouldNotBeNil)
+		fmt.Println(que.front())
+	})
 }
 
 func TestNewStack(t *testing.T) {
@@ -91,5 +99,30 @@ func TestNewQueueToStack(t *testing.T) {
 		stack.push(7)
 		val, _ = stack.front()
 		So(7, ShouldEqual, val)
+	})
+}
+
+func TestNewStackToQueue(t *testing.T) {
+	stq := newStackToQueue(5)
+	Convey("test the stackToQueue function", t, func() {
+		stq.push(5)
+		stq.push(4)
+		stq.push(3)
+		stq.push(2)
+		val, _ := stq.top()
+		So(val, ShouldEqual, 5)
+		stq.pop()
+		val, _ = stq.top()
+		So(val, ShouldEqual, 4)
+		err := stq.pop()
+		So(err, ShouldBeNil)
+		err = stq.pop()
+		So(err, ShouldBeNil)
+		val, err = stq.top()
+		So(val, ShouldEqual,2)
+		err = stq.pop()
+		So(err, ShouldBeNil)
+		val, err = stq.top()
+		So(err, ShouldNotBeNil)
 	})
 }
