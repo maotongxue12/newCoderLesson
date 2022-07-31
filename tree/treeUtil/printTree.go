@@ -6,9 +6,9 @@ import (
 )
 
 type Node struct {
-	Value int
+	Value  int
 	Parent *Node
-	Left  *Node
+	Left   *Node
 	Right  *Node
 }
 
@@ -80,7 +80,7 @@ func PrintAvlTree(root *Node) {
 	for i := range printArray {
 		printArray[i] = make([]string, totalWidth)
 		for j := range printArray[i] {
-			printArray[i][j] = " "
+			printArray[i][j] = "0"
 		}
 	}
 
