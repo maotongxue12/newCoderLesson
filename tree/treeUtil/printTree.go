@@ -80,7 +80,7 @@ func PrintAvlTree(root *Node) {
 	for i := range printArray {
 		printArray[i] = make([]string, totalWidth)
 		for j := range printArray[i] {
-			printArray[i][j] = "0"
+			printArray[i][j] = " "
 		}
 	}
 

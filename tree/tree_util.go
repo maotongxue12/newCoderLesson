@@ -1,6 +1,10 @@
 package tree
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type treeNode struct {
 	val   int
@@ -22,19 +26,40 @@ func newTreeNode(value int, leftNode, rightNode *treeNode) *treeNode {
 	}
 }
 
+func printTree(head *treeNode) {
+	if head == nil {
+		return
+	}
+	printProcess(head, 0, "H", 17)
+}
+
 //打印的整体过程是：右子树–>根节点–>左子树
 func printProcess(head *treeNode, height int, to string, length int) {
 	if head == nil {
 		return
 	}
-	printProcess(head.right, height+1, "v", 17)
-	val := strconv.Itoa(head.val)
+	printProcess(head.right, height+1, "v", length)
+	var builder strings.Builder
+	builder.WriteString(to)
+	builder.WriteString(strconv.Itoa(head.val))
+	builder.WriteString(to)
+	val := builder.String()
 	lenM := len(val)
 	lenL := (length - lenM) / 2
 	lenR := length - lenM - lenL
-	val = getSpace(lenR)
+	var b strings.Builder
+	b.WriteString(getSpace(lenL))
+	b.WriteString(val)
+	b.WriteString(getSpace(lenR))
+	val = b.String()
+	fmt.Println(getSpace(length*height) + val)
+	printProcess(head.left, height+1, "^", length)
 }
 
 func getSpace(int2 int) string {
-
+	str := make([]byte, 0)
+	for i := 0; i < int2; i++ {
+		str = append(str, ' ')
+	}
+	return string(str)
 }
