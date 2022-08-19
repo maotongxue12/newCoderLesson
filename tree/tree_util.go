@@ -7,9 +7,10 @@ import (
 )
 
 type treeNode struct {
-	val   int
-	left  *treeNode
-	right *treeNode
+	val    int
+	left   *treeNode
+	right  *treeNode
+	parent *treeNode
 }
 
 //二叉树可以用常规的三种遍历结果来描述其结构，但是不够直观，尤其是二叉树中有重复 值的时候，
