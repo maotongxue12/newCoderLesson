@@ -2,6 +2,7 @@ package tree
 
 import (
 	"strconv"
+	"strings"
 )
 
 //题目一：实现二叉树的先序、中序、后序遍历，包括递归方式和非递归方式
@@ -265,8 +266,107 @@ func postTraversalSerializationNonRec(head *treeNode) (res string) {
 	if head == nil {
 		return
 	}
+	tmpRes := ""
 	stack := make([]*treeNode, 0)
 	stack = append(stack, head)
+	for len(stack) != 0 {
+		temp := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		tmp, _ := strconv.Atoi("#")
+		if temp.val == tmp {
+			tmpRes += "#" + "_"
+			continue
+		}
+		tmpRes += strconv.Itoa(temp.val) + "_"
+		if temp.left != nil {
+			stack = append(stack, temp.left)
+		} else {
+			val, _ := strconv.Atoi("#")
+			stack = append(stack, newTreeNode(val, nil,nil))
+		}
+		if temp.right != nil {
+			stack = append(stack, temp.right)
+		} else {
+			val, _ := strconv.Atoi("#")
+			stack = append(stack, newTreeNode(val, nil,nil))
+		}
+	}
 
+	res = reverseString(tmpRes[:len(tmpRes)-1])
+	return res + "_"
+}
+
+func reverseString(s string) (res string) {
+	tmp := []rune(s)
+	for from, to := 0, len(tmp)-1; from < to; from, to = from+1, to -1 {
+		tmp[from], tmp[to] = tmp[to], tmp[from]
+	}
+	return string(tmp)
+}
+
+func postTraversalSerializationNonRec2(head *treeNode) (res string){
+	if head == nil {
+		return
+	}
+	stack := make([]*treeNode, 0)
+	stack = append(stack, head)
+	for len(stack) != 0 {
+		tmp := stack[len(stack)-1]
+		if tmp.left != nil && tmp.left != head && tmp.right != head {
+			stack = append(stack, head.left)
+		} else if tmp.right != nil && tmp.right != head {
+			stack = append(stack, head.right)
+		} else {
+			stack = stack[:len(stack)-1]
+			head = tmp
+		}
+	}
 	return res
 }
+
+//先序递归反序列化
+var index int
+func preDeserialize(str string) (head *treeNode) {
+	//字符串格式：5_3_2_9_#_#_#_4_#_#_8_1_#_#_7_#_#处理
+	//去除"_",并转为数组形式
+	index = -1
+	temp := strings.Split(str, "_")
+	head = preDeserializeProcess(temp)
+	return head
+}
+
+func preDeserializeProcess(strs []string) (head *treeNode) {
+	index++
+	tmp := strs[index]
+	if tmp == "#" {
+		return
+	}
+
+	val, _ := strconv.Atoi(tmp)
+	head = newTreeNode(val, nil, nil)
+	head.left = preDeserializeProcess(strs)
+	head.right = preDeserializeProcess(strs)
+	return head
+}
+
+//后序递归反序列化
+var j int
+func postDeserialize(str string) (head *treeNode) {
+	strs := strings.Split(str, "_")
+	j = len(strs)
+	head = postDeserializeProcess(strs)
+	return head
+}
+
+func postDeserializeProcess(str []string) (head *treeNode) {
+	j--
+	if str[j] == "#" {
+		return
+	}
+	nodeVal, _ := strconv.Atoi("#")
+	head = newTreeNode(nodeVal, nil, nil)
+	head.right = postDeserializeProcess(str)
+	head.left = postDeserializeProcess(str)
+	return head
+}
+

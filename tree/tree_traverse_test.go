@@ -58,6 +58,16 @@ func TestPreTraversalSerialization(t *testing.T) {
 		So(resIn, ShouldResemble, resInUnRec)
 		fmt.Println(resIn)
 		resPost := postTraversalSerialization(head)
+		resPostUnRec := postTraversalSerializationNonRec(head)
 		fmt.Println(resPost)
+		So(resPost, ShouldResemble, resPostUnRec)
+	})
+}
+
+func TestPreDeserialize(t *testing.T) {
+	Convey("test the tree deserialize...", t, func(){
+		strs := "5_3_2_9_#_#_#_4_#_#_8_1_#_#_7_#_#"
+		head := preDeserialize(strs)
+		printTree(head)
 	})
 }

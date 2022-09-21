@@ -70,7 +70,8 @@ func process(head *treeUtil.Node) *balanceStruct {
 
 //判断一颗二叉树是否是完全二叉树
 //思路：结合完全二叉树特点，可采用层序遍历方法实现该算法，当进行层序遍历时：
-//（1）如果当前节点有右子树没有左子树则必然不是完全二叉树；（2）如果当前节点仅有一个子树，则在他之后遍历的节点全部为叶节点，否则此二叉树必然不是完全二叉树
+//（1）如果当前节点有右子树没有左子树则必然不是完全二叉树；
+//（2）如果当前节点仅有一个子树，则在他之后遍历的节点全部为叶节点，否则此二叉树必然不是完全二叉树
 func judgeIsCompleteBinaryTree(head *treeUtil.Node) bool {
 	if head == nil {
 		return true
