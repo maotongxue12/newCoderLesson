@@ -38,7 +38,7 @@ type node struct{
 	element int
 }
 
-//为了表示维护节点之间的关系，初始化两个map结构：fatherMap维护节点所对应的副节点
+//为了表示维护节点之间的关系，初始化两个map结构：fatherMap维护节点所对应的父节点
 //sizeMap表示该节点所在集合的个数，同时，仅该节点为代表节点时，该节点对应value值才有意义
 var fatherMap = make(map[node]node, 0)
 var sizeMap = make(map[node]int, 0)
@@ -51,7 +51,7 @@ func initialUnionSet(sets []node) {
 	}
 }
 
-//获取当前节点的父节点，同时，在获取父节点时会做一个优化，对于链型的集合进行扁平化处理
+//获取当前节点的代表节点，同时，在获取代表节点时会做一个优化，对于链型的集合进行扁平化处理
 //将该节点的所有父节点都指向代表节点
 func findFather(n node) node {
 	fatherNode := fatherMap[n]
@@ -73,8 +73,7 @@ func findFather(n node) node {
 
 //判断两个元素是否处于同一个集合中: 首先分别找到两个节点所属的根节点，判断是否属于同一个集合
 func isSameSet(a, b node) bool {
-	
-	return true
+	return findFather(a) == findFather(b)
 }
 
 
