@@ -45,6 +45,8 @@ var sizeMap = make(map[node]int, 0)
 
 //初始化并查集
 func initialUnionSet(sets []node) {
+	fatherMap = make(map[node]node)
+	sizeMap = make(map[node]int)
 	for _, val := range sets {
 		fatherMap[val] = val
 		sizeMap[val] = 1
@@ -79,5 +81,17 @@ func isSameSet(a, b node) bool {
 
 //合并两个元素所在的集合
 func union(a, b node) {
-
+	fatherNodeA := findFather(a)
+	fatherNodeB := findFather(b)
+	if fatherNodeA != fatherNodeB {
+		aSize := sizeMap[fatherNodeA]
+		bSize := sizeMap[fatherNodeB]
+		if aSize <= bSize {
+			fatherMap[fatherNodeA] = fatherNodeB
+			sizeMap[fatherNodeB] = aSize + bSize
+		} else {
+			fatherMap[fatherNodeB] = fatherNodeA
+			sizeMap[fatherNodeA] = aSize + bSize
+		}
+	}
 }
