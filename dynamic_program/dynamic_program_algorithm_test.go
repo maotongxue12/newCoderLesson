@@ -37,7 +37,7 @@ func TestPrintAllPermutations(t *testing.T) {
 }
 
 func TestPermutationsNoRepeat(t *testing.T) {
-	str := "abb"
+	str := "abcb"
 	printPermutationsNoRepeat(str)
 }
 
@@ -114,7 +114,7 @@ func TestKnapsack(t *testing.T) {
 	times := 10
 	arrA := make([]int, 6)
 	arrB := make([]int, 6)
-	bag := 30
+	bag := 100
 	for i := 0; i < times; i++ {
 		rand.Seed(time.Now().UnixNano())
 		for j := 0; j < len(arrA); j++ {
